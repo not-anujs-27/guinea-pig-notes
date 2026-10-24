@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { queryOptions, useMutation, useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
 import { useState, type FormEvent } from "react";
 import { format } from "date-fns";
@@ -124,7 +124,11 @@ function NotesPage() {
               >
                 <div className="flex items-start justify-between gap-4">
                   <div>
-                    <h2 className="text-3xl leading-tight">{note.title}</h2>
+                    <h2 className="text-3xl leading-tight">
+                      <Link to="/note/$noteId" params={{ noteId: String(note.id) }}>
+                        {note.title}
+                      </Link>
+                    </h2>
                     {note.created_at && (
                       <p className="mt-1 text-xs uppercase tracking-[0.18em] text-brass">
                         {format(new Date(note.created_at), "d MMM yyyy · HH:mm")}
