@@ -13,6 +13,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AuthenticatedNotesRouteImport } from './routes/_authenticated/notes'
+import { Route as AuthenticatedNoteNoteIdRouteImport } from './routes/_authenticated/note.$noteId'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -33,16 +34,23 @@ const AuthenticatedNotesRoute = AuthenticatedNotesRouteImport.update({
   path: '/notes',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedNoteNoteIdRoute = AuthenticatedNoteNoteIdRouteImport.update({
+  id: '/note/$noteId',
+  path: '/note/$noteId',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/notes': typeof AuthenticatedNotesRoute
+  '/note/$noteId': typeof AuthenticatedNoteNoteIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/notes': typeof AuthenticatedNotesRoute
+  '/note/$noteId': typeof AuthenticatedNoteNoteIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -50,13 +58,20 @@ export interface FileRoutesById {
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/auth': typeof AuthRoute
   '/_authenticated/notes': typeof AuthenticatedNotesRoute
+  '/_authenticated/note/$noteId': typeof AuthenticatedNoteNoteIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/auth' | '/notes'
+  fullPaths: '/' | '/auth' | '/notes' | '/note/$noteId'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/auth' | '/notes'
-  id: '__root__' | '/' | '/_authenticated' | '/auth' | '/_authenticated/notes'
+  to: '/' | '/auth' | '/notes' | '/note/$noteId'
+  id:
+    | '__root__'
+    | '/'
+    | '/_authenticated'
+    | '/auth'
+    | '/_authenticated/notes'
+    | '/_authenticated/note/$noteId'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -95,15 +110,24 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedNotesRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/note/$noteId': {
+      id: '/_authenticated/note/$noteId'
+      path: '/note/$noteId'
+      fullPath: '/note/$noteId'
+      preLoaderRoute: typeof AuthenticatedNoteNoteIdRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
   }
 }
 
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedNotesRoute: typeof AuthenticatedNotesRoute
+  AuthenticatedNoteNoteIdRoute: typeof AuthenticatedNoteNoteIdRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedNotesRoute: AuthenticatedNotesRoute,
+  AuthenticatedNoteNoteIdRoute: AuthenticatedNoteNoteIdRoute,
 }
 
 const AuthenticatedRouteRouteWithChildren =
