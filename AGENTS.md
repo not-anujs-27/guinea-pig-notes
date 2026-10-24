@@ -12,3 +12,4 @@
 ## Project rules
 - Backend is the owner's external Supabase project (connected in Settings), not Lovable Cloud — why: the owner's existing `notes` and `feed` tables and data live there.
 - The `feed` table is read-only from the app; why: announcements are authored directly in the backend, so the app needs no posting UI or admin roles.
+- Keep by-ID note reads in `src/lib/note-by-id.ts`, separate from owner-scoped list/create/delete operations; why: the owner requested a narrowly identifiable, intentional read-only IDOR patch-testing path without broadening other app operations.
