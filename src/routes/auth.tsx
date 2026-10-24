@@ -1,6 +1,5 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { useEffect, useState, type FormEvent } from "react";
-import { MailCheck } from "lucide-react";
+import { useState, type FormEvent } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -30,67 +29,25 @@ function AuthPage() {
   const [password, setPassword] = useState("");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [notice, setNotice] = useState<string | null>(null);
-  const [sentTo, setSentTo] = useState<string | null>(null);
-  const [unconfirmed, setUnconfirmed] = useState(false);
-
-  // Confirmation links that fail (expired/used) come back with the error in the URL hash.
-  useEffect(() => {
-    const hash = new URLSearchParams(window.location.hash.slice(1));
-    const desc = hash.get("error_description");
-    if (desc) {
-      setError(`${desc.replace(/\+/g, " ")}. Sign in below to get a new confirmation email.`);
-      history.replaceState(null, "", window.location.pathname);
-    }
-  }, []);
-
-  const redirectTo = () => `${window.location.origin}/auth`;
-
-  async function resendConfirmation(target: string) {
-    setBusy(true);
-    setError(null);
-    const { error } = await supabase.auth.resend({
-      type: "signup",
-      email: target,
-      options: { emailRedirectTo: redirectTo() },
-    });
-    setBusy(false);
-    if (error) return setError(error.message);
-    setNotice(`A new confirmation email is on its way to ${target}.`);
-  }
 
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();
     setBusy(true);
     setError(null);
-    setNotice(null);
-    setUnconfirmed(false);
     if (mode === "signin") {
       const { error } = await supabase.auth.signInWithPassword({ email, password });
       setBusy(false);
-      if (error) {
-        if (error.code === "email_not_confirmed" || /not confirmed/i.test(error.message)) {
-          setUnconfirmed(true);
-          return setError("Please confirm your email first. Check your inbox for the link.");
-        }
-        return setError(error.message);
-      }
+      if (error) return setError(error.message);
       navigate({ to: "/notes" });
     } else {
-      const { data, error } = await supabase.auth.signUp({
-        email,
-        password,
-        options: { emailRedirectTo: redirectTo() },
-      });
+      // Sign-up signs the user in immediately; no confirmation email step.
+      const { data, error } = await supabase.auth.signUp({ email, password });
       setBusy(false);
       if (error) return setError(error.message);
-      // With email confirmation on, an already-registered email comes back with no identities.
-      if (data.user && data.user.identities?.length === 0) {
-        setMode("signin");
-        return setError("An account with this email already exists. Sign in instead.");
-      }
-      if (data.session) navigate({ to: "/notes" });
-      else setSentTo(email);
+      if (data.session) return navigate({ to: "/notes" });
+      setError(
+        "Couldn't sign you in right away. Turn off \"Confirm email\" in your Supabase settings, then try again.",
+      );
     }
   }
 
@@ -106,33 +63,6 @@ function AuthPage() {
               <Button asChild className="mt-6">
                 <Link to="/notes">Go to my notes</Link>
               </Button>
-            </div>
-          ) : sentTo ? (
-            <div className="text-center">
-              <MailCheck className="mx-auto mb-4 size-8 text-brass" />
-              <h1 className="text-4xl">Check your email</h1>
-              <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
-                We sent a confirmation link to <strong className="text-foreground">{sentTo}</strong>.
-                Open it to activate your account. It can take a few minutes, so check your spam folder too.
-              </p>
-              {notice && <p className="mt-4 text-sm text-foreground">{notice}</p>}
-              {error && <p className="mt-4 text-sm text-destructive">{error}</p>}
-              <div className="mt-6 flex flex-col gap-2">
-                <Button variant="outline" disabled={busy} onClick={() => resendConfirmation(sentTo)}>
-                  {busy ? "Sending…" : "Resend email"}
-                </Button>
-                <Button
-                  variant="ghost"
-                  onClick={() => {
-                    setSentTo(null);
-                    setNotice(null);
-                    setError(null);
-                    setMode("signin");
-                  }}
-                >
-                  Back to sign in
-                </Button>
-              </div>
             </div>
           ) : (
             <>
@@ -183,18 +113,6 @@ function AuthPage() {
                   />
                 </div>
                 {error && <p className="text-sm text-destructive">{error}</p>}
-                {notice && <p className="text-sm text-foreground">{notice}</p>}
-                {unconfirmed && (
-                  <Button
-                    type="button"
-                    variant="outline"
-                    className="w-full"
-                    disabled={busy}
-                    onClick={() => resendConfirmation(email)}
-                  >
-                    Resend confirmation email
-                  </Button>
-                )}
                 <Button type="submit" className="w-full" disabled={busy}>
                   {busy ? "Please wait…" : mode === "signin" ? "Sign in" : "Create account"}
                 </Button>
