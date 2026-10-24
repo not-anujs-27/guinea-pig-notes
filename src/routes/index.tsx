@@ -1,5 +1,7 @@
-import { createFileRoute } from "@tanstack/react-router";
-import { Lock, Megaphone, PenLine } from "lucide-react";
+import { createFileRoute, Link } from "@tanstack/react-router";
+import { Button } from "@/components/ui/button";
+import { SiteHeader } from "@/components/site-header";
+import { Lock, KeyRound, PenLine } from "lucide-react";
 import heroImage from "@/assets/journal-hero.jpg";
 
 export const Route = createFileRoute("/")({
@@ -9,12 +11,12 @@ export const Route = createFileRoute("/")({
       { title: "DocuVault — Your private journal" },
       {
         name: "description",
-        content: "DocuVault is a quiet, private place to write. Keep personal notes locked to you and stay in the loop with announcements.",
+        content: "DocuVault is a quiet, private place to write. Sign in and keep personal notes in one calm place.",
       },
       { property: "og:title", content: "DocuVault — Your private journal" },
       {
         property: "og:description",
-        content: "A quiet, private place to write. Personal notes locked to you, plus public announcements.",
+        content: "A quiet, private place to write. Personal notes in one calm place.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
@@ -34,23 +36,16 @@ const features = [
     body: "A calm page, a title, your thoughts. Nothing in the way.",
   },
   {
-    icon: Megaphone,
-    title: "Announcements",
-    body: "Public updates in one feed, separate from your own writing.",
+    icon: KeyRound,
+    title: "Yours to keep",
+    body: "Sign in from anywhere and pick up right where you left off.",
   },
 ];
 
 function Index() {
   return (
     <div className="min-h-screen bg-background">
-      <header className="mx-auto flex max-w-6xl items-center justify-between px-6 py-6">
-        <div className="flex items-center gap-2">
-          <span className="grid size-8 place-items-center rounded-md bg-primary text-primary-foreground">
-            <Lock className="size-4" />
-          </span>
-          <span className="font-display text-2xl">DocuVault</span>
-        </div>
-      </header>
+      <SiteHeader />
 
       <main>
         <section className="mx-auto grid max-w-6xl items-center gap-12 px-6 pb-20 pt-8 lg:grid-cols-[1.05fr_1fr] lg:pt-16">
@@ -64,9 +59,11 @@ function Index() {
               <em className="text-primary">to think out loud.</em>
             </h1>
             <p className="mt-6 max-w-md text-lg leading-relaxed text-muted-foreground">
-              DocuVault keeps your notes locked to you, with a quiet feed for the updates that
-              matter.
+              DocuVault is a calm place to write down what matters, and keep it to yourself.
             </p>
+            <Button asChild size="lg" className="mt-8">
+              <Link to="/notes">Open your vault</Link>
+            </Button>
           </div>
 
           <div className="animate-rise overflow-hidden rounded-2xl shadow-lift [animation-delay:120ms]">
