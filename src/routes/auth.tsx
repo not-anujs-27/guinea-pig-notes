@@ -1,5 +1,5 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { useState, type FormEvent } from "react";
+import { useEffect, useState, type FormEvent } from "react";
 import { MailCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -183,6 +183,18 @@ function AuthPage() {
                   />
                 </div>
                 {error && <p className="text-sm text-destructive">{error}</p>}
+                {notice && <p className="text-sm text-foreground">{notice}</p>}
+                {unconfirmed && (
+                  <Button
+                    type="button"
+                    variant="outline"
+                    className="w-full"
+                    disabled={busy}
+                    onClick={() => resendConfirmation(email)}
+                  >
+                    Resend confirmation email
+                  </Button>
+                )}
                 <Button type="submit" className="w-full" disabled={busy}>
                   {busy ? "Please wait…" : mode === "signin" ? "Sign in" : "Create account"}
                 </Button>
