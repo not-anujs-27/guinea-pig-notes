@@ -8,7 +8,7 @@ export async function readNoteById(noteId: string) {
   const { data, error } = await supabase
     .from("notes")
     .select("id, title, content, created_at")
-    .eq("id", noteId)
+    .eq("id", Number(noteId))
     .maybeSingle();
   if (error) throw error;
   return data;

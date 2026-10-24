@@ -20,6 +20,6 @@ describe("intentional IDOR test target", () => {
 
   it("looks a note up by id alone, with no owner check", async () => {
     await readNoteById("7");
-    expect(calls).toEqual([["id", "7"]]);
+    expect(calls).toEqual([["id", 7]]);
   });
 });
