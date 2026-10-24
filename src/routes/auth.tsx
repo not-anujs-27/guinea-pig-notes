@@ -4,7 +4,6 @@ import { MailCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { SiteHeader } from "@/components/site-header";
 import { supabase } from "@/integrations/supabase/client";
 import { useSession } from "@/lib/session";
@@ -93,19 +92,24 @@ function AuthPage() {
               <p className="mt-1 text-sm text-muted-foreground">
                 {mode === "signin" ? "Sign in to your notes." : "Create an account with your email."}
               </p>
-              <Tabs
-                value={mode}
-                onValueChange={(v) => {
-                  setMode(v as "signin" | "signup");
-                  setError(null);
-                }}
-                className="mt-6"
-              >
-                <TabsList className="grid w-full grid-cols-2">
-                  <TabsTrigger value="signin">Sign in</TabsTrigger>
-                  <TabsTrigger value="signup">Create account</TabsTrigger>
-                </TabsList>
-              </Tabs>
+              <div className="mt-6 grid grid-cols-2 gap-1 rounded-lg bg-muted p-1" role="tablist">
+                {(["signin", "signup"] as const).map((m) => (
+                  <Button
+                    key={m}
+                    type="button"
+                    role="tab"
+                    aria-selected={mode === m}
+                    variant={mode === m ? "outline" : "ghost"}
+                    size="sm"
+                    onClick={() => {
+                      setMode(m);
+                      setError(null);
+                    }}
+                  >
+                    {m === "signin" ? "Sign in" : "Create account"}
+                  </Button>
+                ))}
+              </div>
               <form onSubmit={handleSubmit} className="mt-6 space-y-4">
                 <div className="space-y-2">
                   <Label htmlFor="email">Email</Label>
